@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/Feedback'
 import { baseLabel } from '@/lib/format'
 
 export function Logistics() {
-  const { kennels, base, loading } = useStore()
+  const { alas, setores, base, loading } = useStore()
 
   return (
     <div>
@@ -28,7 +28,7 @@ export function Logistics() {
               </h2>
             </div>
             <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
-              <OccupancyPanel kennels={kennels} />
+              <OccupancyPanel alas={alas} setores={setores} />
             </div>
           </section>
 

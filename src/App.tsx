@@ -9,6 +9,7 @@ import { Dashboard } from '@/pages/Dashboard'
 import { Pets } from '@/pages/Pets'
 import { PetProfile } from '@/pages/PetProfile'
 import { Logistics } from '@/pages/Logistics'
+import { Locais } from '@/pages/Locais'
 import { Prontuarios } from '@/pages/Prontuarios'
 import { Medications } from '@/pages/Medications'
 import { Vaccines } from '@/pages/Vaccines'
@@ -43,6 +44,7 @@ export default function App() {
                 <Route path="pets/:id" element={<PetProfile />} />
                 <Route path="prontuarios" element={<Prontuarios />} />
                 <Route path="logistica" element={<Logistics />} />
+                <Route path="locais" element={<Locais />} />
                 <Route path="agenda" element={<Agenda />} />
                 <Route path="medicamentos" element={<Medications />} />
                 <Route path="vacinas" element={<Vaccines />} />

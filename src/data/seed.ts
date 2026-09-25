@@ -1,11 +1,13 @@
 import type {
+  Ala,
   Alert,
   Appointment,
   AppUser,
   Base,
-  Kennel,
   Pet,
   Porte,
+  Sede,
+  Setor,
   Task,
   Temperamento,
   Tutor,
@@ -343,14 +345,27 @@ export const pets: Pet[] = basePets.map((p) => {
   return { ...p, ...s, intakeDate: p.createdAt }
 })
 
-// ── Alas / Nichos — ocupação (segregado por base) ──────────────────────
-export const kennels: Kennel[] = [
-  { id: 'k_ong_a', name: 'Ala A', sector: 'Alojamento', base: 'ong', capacity: 10, occupied: 8 },
-  { id: 'k_ong_b', name: 'Ala B', sector: 'Tratamento', base: 'ong', capacity: 10, occupied: 5 },
-  { id: 'k_ong_iso', name: 'Isolamento', sector: 'Quarentena', base: 'ong', capacity: 4, occupied: 2 },
-  { id: 'k_rec_c', name: 'Ala C', sector: 'Alojamento', base: 'recanto', capacity: 10, occupied: 7 },
-  { id: 'k_rec_d', name: 'Ala D', sector: 'Alojamento', base: 'recanto', capacity: 10, occupied: 6 },
-  { id: 'k_rec_obs', name: 'Observação', sector: 'Observação', base: 'recanto', capacity: 6, occupied: 3 },
+// ── Estrutura física: Sedes → Setores → Alas (segregado por base) ───────
+export const sedes: Sede[] = [
+  { id: 'sede_ong', base: 'ong', name: 'Sede ONG Lunaar', address: 'Cuiabá — MT', notes: 'Unidade principal da associação.' },
+  { id: 'sede_rec', base: 'recanto', name: 'Recanto Lunaar', address: 'Zona rural — Cuiabá/MT', notes: 'Unidade de acolhimento e reabilitação.' },
+]
+
+export const setores: Setor[] = [
+  { id: 'set_ong_aloj', base: 'ong', sedeId: 'sede_ong', name: 'Alojamento', description: 'Animais estáveis aguardando adoção.' },
+  { id: 'set_ong_trat', base: 'ong', sedeId: 'sede_ong', name: 'Tratamento', description: 'Animais em cuidado clínico.' },
+  { id: 'set_ong_quar', base: 'ong', sedeId: 'sede_ong', name: 'Quarentena', description: 'Isolamento sanitário.' },
+  { id: 'set_rec_aloj', base: 'recanto', sedeId: 'sede_rec', name: 'Alojamento', description: 'Alojamento amplo do Recanto.' },
+  { id: 'set_rec_obs', base: 'recanto', sedeId: 'sede_rec', name: 'Observação', description: 'Acompanhamento pós-tratamento.' },
+]
+
+export const alas: Ala[] = [
+  { id: 'ala_ong_a', base: 'ong', sedeId: 'sede_ong', setorId: 'set_ong_aloj', name: 'Ala A', kind: 'ala', capacity: 10, occupied: 8 },
+  { id: 'ala_ong_b', base: 'ong', sedeId: 'sede_ong', setorId: 'set_ong_trat', name: 'Ala B', kind: 'ala', capacity: 10, occupied: 5 },
+  { id: 'ala_ong_iso', base: 'ong', sedeId: 'sede_ong', setorId: 'set_ong_quar', name: 'Isolamento', kind: 'isolamento', capacity: 4, occupied: 2 },
+  { id: 'ala_rec_c', base: 'recanto', sedeId: 'sede_rec', setorId: 'set_rec_aloj', name: 'Ala C', kind: 'ala', capacity: 10, occupied: 7 },
+  { id: 'ala_rec_d', base: 'recanto', sedeId: 'sede_rec', setorId: 'set_rec_aloj', name: 'Canil D', kind: 'canil', capacity: 10, occupied: 6 },
+  { id: 'ala_rec_obs', base: 'recanto', sedeId: 'sede_rec', setorId: 'set_rec_obs', name: 'Observação', kind: 'recinto', capacity: 6, occupied: 3 },
 ]
 
 // ── Agenda ─────────────────────────────────────────────────────────────

@@ -10,7 +10,7 @@ import { baseLabel, porteLabel } from '@/lib/format'
 import type { Porte } from '@/data/types'
 
 export function Reports() {
-  const { pets, kennels, appointments, base, loading } = useStore()
+  const { pets, alas, setores, appointments, base, loading } = useStore()
 
   const kpis = useMemo(() => {
     const total = pets.length
@@ -18,12 +18,12 @@ export function Reports() {
     const emTratamento = pets.filter((p) => p.status === 'internado' || p.status === 'critico').length
     const aptos = pets.filter((p) => p.stage === 'alta').length
     const vacinasAplicadas = pets.reduce((n, p) => n + p.vaccines.length, 0)
-    const totalCap = kennels.reduce((n, k) => n + k.capacity, 0)
-    const totalOcc = kennels.reduce((n, k) => n + k.occupied, 0)
+    const totalCap = alas.reduce((n, k) => n + k.capacity, 0)
+    const totalOcc = alas.reduce((n, k) => n + k.occupied, 0)
     const ocupacao = totalCap ? Math.round((totalOcc / totalCap) * 100) : 0
     const medsAdmin = pets.reduce((n, p) => n + p.medications.filter((m) => m.active).length, 0)
     return { total, castrados, emTratamento, aptos, vacinasAplicadas, ocupacao, medsAdmin }
-  }, [pets, kennels])
+  }, [pets, alas])
 
   const porte = useMemo(() => {
     const c: Record<Porte, number> = { P: 0, M: 0, G: 0 }
@@ -57,7 +57,7 @@ export function Reports() {
         <section className="card p-5 sm:p-6">
           <h2 className="mb-5 text-base font-bold text-ink">Ocupação das alas</h2>
           <div className="grid grid-cols-1 gap-x-8 gap-y-4">
-            <OccupancyPanel kennels={kennels} />
+            <OccupancyPanel alas={alas} setores={setores} />
           </div>
         </section>
 

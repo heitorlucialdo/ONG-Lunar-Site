@@ -3,8 +3,8 @@
 // later, reimplement these methods (e.g. `supabase.from('pets').select()`)
 // WITHOUT touching any component — the store and UI only talk to this file.
 
-import { alerts, appointments, currentUser, kennels, pets, tasks, tutors } from '@/data/seed'
-import type { Alert, Appointment, AppUser, Kennel, Pet, Task, Tutor } from '@/data/types'
+import { alas, alerts, appointments, currentUser, pets, sedes, setores, tasks, tutors } from '@/data/seed'
+import type { Ala, Alert, Appointment, AppUser, Pet, Sede, Setor, Task, Tutor } from '@/data/types'
 
 export interface Snapshot {
   pets: Pet[]
@@ -12,7 +12,9 @@ export interface Snapshot {
   appointments: Appointment[]
   tasks: Task[]
   alerts: Alert[]
-  kennels: Kennel[]
+  sedes: Sede[]
+  setores: Setor[]
+  alas: Ala[]
   user: AppUser
 }
 
@@ -32,7 +34,9 @@ export const repository = {
       appointments,
       tasks,
       alerts,
-      kennels,
+      sedes,
+      setores,
+      alas,
       user: currentUser,
     })
   },

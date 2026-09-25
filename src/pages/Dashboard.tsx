@@ -25,7 +25,7 @@ function greeting() {
 const capitalizeFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
 export function Dashboard() {
-  const { pets, appointments, alerts, kennels, tutors, loading } = useStore()
+  const { pets, appointments, alerts, alas, setores, tutors, loading } = useStore()
 
   const today = new Date().toISOString().slice(0, 10)
   const stats = useMemo(() => {
@@ -94,7 +94,7 @@ export function Dashboard() {
         <section className="card p-5 sm:p-6">
           <SectionTitle icon={ClipboardList} title="Ocupação das alas" action={<Link to="/logistica" className="link-more">Logística <ArrowRight className="h-3.5 w-3.5" /></Link>} />
           <div className="mt-5">
-            <OccupancyPanel kennels={kennels} />
+            <OccupancyPanel alas={alas} setores={setores} />
           </div>
         </section>
       </div>

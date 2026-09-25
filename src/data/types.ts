@@ -205,13 +205,38 @@ export interface Alert {
   read: boolean
 }
 
-export interface Kennel {
+// ── Estrutura física: Sede → Setor → Ala/Canil ─────────────────────────
+/** Sede / unidade física da instituição. */
+export interface Sede {
   id: string
-  name: string
-  sector: string
   base: Base
-  capacity: number
-  occupied: number
+  name: string
+  address?: string
+  notes?: string
+}
+
+/** Setor dentro de uma sede (ex.: Alojamento, Tratamento, Quarentena). */
+export interface Setor {
+  id: string
+  base: Base
+  sedeId: string
+  name: string
+  description?: string
+}
+
+export type AlaKind = 'ala' | 'canil' | 'baia' | 'recinto' | 'isolamento'
+
+/** Ala / canil dentro de um setor, com tamanho e ocupação. */
+export interface Ala {
+  id: string
+  base: Base
+  sedeId: string
+  setorId: string
+  name: string
+  kind: AlaKind
+  capacity: number // tamanho (nº de vagas/nichos)
+  occupied: number // ocupação atual
+  notes?: string
 }
 
 export type UserRole = 'admin' | 'usuario' | 'veterinario' | 'recepcao' | 'enfermagem'

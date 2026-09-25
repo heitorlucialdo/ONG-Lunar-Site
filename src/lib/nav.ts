@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Bell,
+  Building2,
   Calendar,
   ClipboardList,
   Home,
@@ -26,6 +27,7 @@ export const primaryNav: NavItem[] = [
   { to: '/pets', label: 'Pets', icon: PawPrint },
   { to: '/prontuarios', label: 'Prontuários', icon: ClipboardList },
   { to: '/logistica', label: 'Logística', icon: KanbanSquare },
+  { to: '/locais', label: 'Locais', icon: Building2 },
   { to: '/agenda', label: 'Agenda', icon: Calendar },
   { to: '/medicamentos', label: 'Medicamentos', icon: Pill },
   { to: '/vacinas', label: 'Vacinas', icon: Syringe },

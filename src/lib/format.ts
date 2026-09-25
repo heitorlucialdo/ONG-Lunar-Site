@@ -1,4 +1,5 @@
 import type {
+  AlaKind,
   Base,
   ClinicalStatus,
   Porte,
@@ -82,6 +83,14 @@ export const porteLabel: Record<Porte, string> = {
   P: 'Pequeno',
   M: 'Médio',
   G: 'Grande',
+}
+
+export const alaKindLabel: Record<AlaKind, string> = {
+  ala: 'Ala',
+  canil: 'Canil',
+  baia: 'Baia',
+  recinto: 'Recinto',
+  isolamento: 'Isolamento',
 }
 
 export const temperamentoLabel: Record<Temperamento, string> = {

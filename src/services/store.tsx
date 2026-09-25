@@ -11,14 +11,16 @@ import { repository, type Snapshot } from './repository'
 import { formatPetCode, uid } from '@/lib/id'
 import { nextPetSeq } from '@/data/seed'
 import type {
+  Ala,
   Alert,
   Appointment,
   AppUser,
   Base,
-  Kennel,
   MedicalRecord,
   Medication,
   Pet,
+  Sede,
+  Setor,
   Stage,
   Task,
   TaskStatus,
@@ -44,7 +46,9 @@ interface StoreValue {
   appointments: Appointment[]
   tasks: Task[]
   alerts: Alert[]
-  kennels: Kennel[]
+  sedes: Sede[]
+  setores: Setor[]
+  alas: Ala[]
   user: AppUser
   // pets
   addPet: (input: NewPetInput) => Pet
@@ -69,6 +73,16 @@ interface StoreValue {
   markAllAlertsRead: () => void
   addTutor: (tutor: Omit<Tutor, 'id'>) => Tutor
   updateTutor: (id: string, patch: Partial<Tutor>) => void
+  // estrutura física (locais)
+  addSede: (sede: Omit<Sede, 'id' | 'base'>) => void
+  updateSede: (id: string, patch: Partial<Sede>) => void
+  deleteSede: (id: string) => void
+  addSetor: (setor: Omit<Setor, 'id' | 'base'>) => void
+  updateSetor: (id: string, patch: Partial<Setor>) => void
+  deleteSetor: (id: string) => void
+  addAla: (ala: Omit<Ala, 'id' | 'base'>) => void
+  updateAla: (id: string, patch: Partial<Ala>) => void
+  deleteAla: (id: string) => void
 }
 
 const StoreContext = createContext<StoreValue | null>(null)
@@ -291,6 +305,46 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setSnap((s) => (s ? { ...s, tutors: s.tutors.map((t) => (t.id === id ? { ...t, ...patch } : t)) } : s))
   }, [])
 
+  // ── Estrutura física (Sede → Setor → Ala) ────────────────────────────
+  const addSede = useCallback<StoreValue['addSede']>((sede) => {
+    setSnap((s) => (s ? { ...s, sedes: [...s.sedes, { id: uid('sede'), base, ...sede }] } : s))
+  }, [base])
+  const updateSede = useCallback<StoreValue['updateSede']>((id, patch) => {
+    setSnap((s) => (s ? { ...s, sedes: s.sedes.map((x) => (x.id === id ? { ...x, ...patch } : x)) } : s))
+  }, [])
+  const deleteSede = useCallback<StoreValue['deleteSede']>((id) => {
+    setSnap((s) => {
+      if (!s) return s
+      const setorIds = new Set(s.setores.filter((x) => x.sedeId === id).map((x) => x.id))
+      return {
+        ...s,
+        sedes: s.sedes.filter((x) => x.id !== id),
+        setores: s.setores.filter((x) => x.sedeId !== id),
+        alas: s.alas.filter((x) => x.sedeId !== id && !setorIds.has(x.setorId)),
+      }
+    })
+  }, [])
+
+  const addSetor = useCallback<StoreValue['addSetor']>((setor) => {
+    setSnap((s) => (s ? { ...s, setores: [...s.setores, { id: uid('set'), base, ...setor }] } : s))
+  }, [base])
+  const updateSetor = useCallback<StoreValue['updateSetor']>((id, patch) => {
+    setSnap((s) => (s ? { ...s, setores: s.setores.map((x) => (x.id === id ? { ...x, ...patch } : x)) } : s))
+  }, [])
+  const deleteSetor = useCallback<StoreValue['deleteSetor']>((id) => {
+    setSnap((s) => (s ? { ...s, setores: s.setores.filter((x) => x.id !== id), alas: s.alas.filter((x) => x.setorId !== id) } : s))
+  }, [])
+
+  const addAla = useCallback<StoreValue['addAla']>((ala) => {
+    setSnap((s) => (s ? { ...s, alas: [...s.alas, { id: uid('ala'), base, ...ala }] } : s))
+  }, [base])
+  const updateAla = useCallback<StoreValue['updateAla']>((id, patch) => {
+    setSnap((s) => (s ? { ...s, alas: s.alas.map((x) => (x.id === id ? { ...x, ...patch } : x)) } : s))
+  }, [])
+  const deleteAla = useCallback<StoreValue['deleteAla']>((id) => {
+    setSnap((s) => (s ? { ...s, alas: s.alas.filter((x) => x.id !== id) } : s))
+  }, [])
+
   const value = useMemo<StoreValue>(() => {
     const allPets = snap?.pets ?? []
     // Segregação ONG × Recanto: tudo é filtrado pela base ativa (RF06).
@@ -307,19 +361,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       appointments: (snap?.appointments ?? []).filter((a) => belongs(a.petId)),
       tasks: (snap?.tasks ?? []).filter((t) => belongs(t.petId)),
       alerts: (snap?.alerts ?? []).filter((a) => belongs(a.petId)),
-      kennels: (snap?.kennels ?? []).filter((k) => k.base === base),
+      sedes: (snap?.sedes ?? []).filter((x) => x.base === base),
+      setores: (snap?.setores ?? []).filter((x) => x.base === base),
+      alas: (snap?.alas ?? []).filter((x) => x.base === base),
       user: snap?.user ?? { id: '', name: '', role: 'recepcao', email: '' },
       addPet, updatePet, deletePet, movePetStage, updateLocation,
       addWeight, addMedication, toggleMedicationActive, addVaccine, addRecord,
       addDocument, deleteDocument,
       addAppointment, updateAppointment, addTask, setTaskStatus,
       markAlertRead, markAllAlertsRead, addTutor, updateTutor,
+      addSede, updateSede, deleteSede, addSetor, updateSetor, deleteSetor,
+      addAla, updateAla, deleteAla,
     }
   }, [
     loading, snap, base, addPet, updatePet, deletePet, movePetStage, updateLocation,
     addWeight, addMedication, toggleMedicationActive, addVaccine, addRecord,
     addDocument, deleteDocument, addAppointment, updateAppointment, addTask,
     setTaskStatus, markAlertRead, markAllAlertsRead, addTutor, updateTutor,
+    addSede, updateSede, deleteSede, addSetor, updateSetor, deleteSetor,
+    addAla, updateAla, deleteAla,
   ])
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
