@@ -164,34 +164,72 @@ export function AddConsultationModal({ pet, open, onClose }: { pet: Pet; open: b
 const STAGES: Stage[] = ['triagem', 'consultorio', 'internacao', 'canil', 'isolamento', 'observacao', 'alta']
 
 export function ChangeLocationModal({ pet, open, onClose }: { pet: Pet; open: boolean; onClose: () => void }) {
-  const { updateLocation } = useStore()
+  const { updateLocation, sedes, setores, alas } = useStore()
   const toast = useToast()
-  const [setor, setSetor] = useState(pet.location.setor)
-  const [canil, setCanil] = useState(pet.location.canil ?? '')
+
+  const currentAla = alas.find((a) => a.id === pet.alaId)
+  const [sedeId, setSedeId] = useState(currentAla?.sedeId ?? sedes[0]?.id ?? '')
+  const [setorId, setSetorId] = useState(currentAla?.setorId ?? '')
+  const [alaId, setAlaId] = useState(pet.alaId ?? '')
   const [box, setBox] = useState(pet.location.box ?? '')
-  const [sala, setSala] = useState(pet.location.sala ?? '')
   const [stage, setStage] = useState<Stage>(pet.stage)
 
+  const sedeSetores = setores.filter((s) => s.sedeId === sedeId)
+  const setorAlas = alas.filter((a) => a.setorId === setorId)
+
+  const onSede = (id: string) => { setSedeId(id); setSetorId(''); setAlaId('') }
+  const onSetor = (id: string) => { setSetorId(id); setAlaId('') }
+
   const save = () => {
-    updateLocation(pet.id, { setor: setor.trim() || 'Recepção', canil: canil.trim() || undefined, box: box.trim() || undefined, sala: sala.trim() || undefined }, stage)
-    toast({ kind: 'success', title: 'Localização atualizada', message: `${pet.name} movido para ${setor}.` })
+    const ala = alas.find((a) => a.id === alaId)
+    const setor = setores.find((s) => s.id === (ala?.setorId ?? setorId))
+    if (ala && ala.occupied >= ala.capacity && pet.alaId !== ala.id) {
+      return toast({ kind: 'warning', title: 'Ala lotada', message: `${ala.name} está sem vagas disponíveis.` })
+    }
+    const location = {
+      setor: setor?.name ?? 'Recepção',
+      canil: ala?.name,
+      box: box.trim() || undefined,
+    }
+    updateLocation(pet.id, location, stage, ala?.id)
+    toast({ kind: 'success', title: 'Localização atualizada', message: ala ? `${pet.name} alocado em ${ala.name}.` : `${pet.name} atualizado.` })
     onClose()
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Alterar localização" description={`Onde está ${pet.name} agora?`}
+    <Modal open={open} onClose={onClose} title="Alterar localização" description={`Aloque ${pet.name} em uma ala cadastrada.`}
       footer={<><Button variant="outline" onClick={onClose}>Cancelar</Button><Button onClick={save}>Salvar</Button></>}>
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Etapa (Kanban)" className="col-span-2">
-          <Select value={stage} onChange={(e) => setStage(e.target.value as Stage)}>
-            {STAGES.map((s) => <option key={s} value={s}>{stageLabel[s]}</option>)}
-          </Select>
-        </Field>
-        <Field label="Setor"><Input value={setor} onChange={(e) => setSetor(e.target.value)} placeholder="Internação" /></Field>
-        <Field label="Canil"><Input value={canil} onChange={(e) => setCanil(e.target.value)} placeholder="Canil B" /></Field>
-        <Field label="Box"><Input value={box} onChange={(e) => setBox(e.target.value)} placeholder="Box 04" /></Field>
-        <Field label="Sala"><Input value={sala} onChange={(e) => setSala(e.target.value)} placeholder="Sala 2" /></Field>
-      </div>
+      {sedes.length === 0 ? (
+        <p className="text-sm text-muted">Nenhuma sede cadastrada. Cadastre a estrutura física em <strong>Locais</strong> antes de alocar animais.</p>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Etapa (Kanban)" className="col-span-2">
+            <Select value={stage} onChange={(e) => setStage(e.target.value as Stage)}>
+              {STAGES.map((s) => <option key={s} value={s}>{stageLabel[s]}</option>)}
+            </Select>
+          </Field>
+          <Field label="Sede" className="col-span-2 sm:col-span-1">
+            <Select value={sedeId} onChange={(e) => onSede(e.target.value)}>
+              {sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </Select>
+          </Field>
+          <Field label="Setor" className="col-span-2 sm:col-span-1">
+            <Select value={setorId} onChange={(e) => onSetor(e.target.value)}>
+              <option value="">Selecione…</option>
+              {sedeSetores.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </Select>
+          </Field>
+          <Field label="Ala / Canil" className="col-span-2 sm:col-span-1">
+            <Select value={alaId} onChange={(e) => setAlaId(e.target.value)} disabled={!setorId}>
+              <option value="">{setorId ? 'Selecione…' : 'Escolha um setor'}</option>
+              {setorAlas.map((a) => <option key={a.id} value={a.id} disabled={a.occupied >= a.capacity && a.id !== pet.alaId}>
+                {a.name} ({a.occupied}/{a.capacity})
+              </option>)}
+            </Select>
+          </Field>
+          <Field label="Box / Nicho" className="col-span-2 sm:col-span-1"><Input value={box} onChange={(e) => setBox(e.target.value)} placeholder="Box 04" /></Field>
+        </div>
+      )}
     </Modal>
   )
 }

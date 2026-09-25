@@ -322,22 +322,22 @@ const basePets: PetSeed[] = [
   },
 ]
 
-// Enriquecimento por animal — base institucional e dados de abrigo.
-const shelterFields: Record<string, { base: Base; porte: Porte; castrado: boolean; temperamento: Temperamento; relatoDores?: string }> = {
-  'LUN-000128': { base: 'ong', porte: 'M', castrado: true, temperamento: 'docil', relatoDores: 'Sensibilidade abdominal à palpação.' },
-  'LUN-000131': { base: 'ong', porte: 'G', castrado: true, temperamento: 'docil', relatoDores: 'Dor no joelho direito (pós-operatório).' },
-  'LUN-000119': { base: 'recanto', porte: 'P', castrado: true, temperamento: 'docil' },
-  'LUN-000102': { base: 'recanto', porte: 'P', castrado: false, temperamento: 'docil' },
-  'LUN-000141': { base: 'ong', porte: 'P', castrado: true, temperamento: 'ativo' },
-  'LUN-000108': { base: 'recanto', porte: 'P', castrado: false, temperamento: 'docil' },
-  'LUN-000137': { base: 'ong', porte: 'G', castrado: true, temperamento: 'docil', relatoDores: 'Cansaço aos esforços.' },
-  'LUN-000144': { base: 'recanto', porte: 'P', castrado: true, temperamento: 'docil' },
-  'LUN-000096': { base: 'ong', porte: 'P', castrado: false, temperamento: 'ativo' },
-  'LUN-000112': { base: 'ong', porte: 'P', castrado: true, temperamento: 'docil' },
-  'LUN-000087': { base: 'recanto', porte: 'P', castrado: false, temperamento: 'ativo' },
-  'LUN-000153': { base: 'ong', porte: 'G', castrado: true, temperamento: 'ativo', relatoDores: 'Dor abdominal aguda.' },
-  'LUN-000121': { base: 'recanto', porte: 'P', castrado: true, temperamento: 'docil' },
-  'LUN-000159': { base: 'recanto', porte: 'P', castrado: false, temperamento: 'docil' },
+// Enriquecimento por animal — base institucional, dados de abrigo e ala alocada.
+const shelterFields: Record<string, { base: Base; porte: Porte; castrado: boolean; temperamento: Temperamento; alaId?: string; relatoDores?: string }> = {
+  'LUN-000128': { base: 'ong', porte: 'M', castrado: true, temperamento: 'docil', alaId: 'ala_ong_b', relatoDores: 'Sensibilidade abdominal à palpação.' },
+  'LUN-000131': { base: 'ong', porte: 'G', castrado: true, temperamento: 'docil', alaId: 'ala_ong_b', relatoDores: 'Dor no joelho direito (pós-operatório).' },
+  'LUN-000119': { base: 'recanto', porte: 'P', castrado: true, temperamento: 'docil', alaId: 'ala_rec_obs' },
+  'LUN-000102': { base: 'recanto', porte: 'P', castrado: false, temperamento: 'docil', alaId: 'ala_rec_c' },
+  'LUN-000141': { base: 'ong', porte: 'P', castrado: true, temperamento: 'ativo', alaId: 'ala_ong_a' },
+  'LUN-000108': { base: 'recanto', porte: 'P', castrado: false, temperamento: 'docil', alaId: 'ala_rec_d' },
+  'LUN-000137': { base: 'ong', porte: 'G', castrado: true, temperamento: 'docil', alaId: 'ala_ong_b', relatoDores: 'Cansaço aos esforços.' },
+  'LUN-000144': { base: 'recanto', porte: 'P', castrado: true, temperamento: 'docil', alaId: 'ala_rec_c' },
+  'LUN-000096': { base: 'ong', porte: 'P', castrado: false, temperamento: 'ativo', alaId: 'ala_ong_a' },
+  'LUN-000112': { base: 'ong', porte: 'P', castrado: true, temperamento: 'docil', alaId: 'ala_ong_a' },
+  'LUN-000087': { base: 'recanto', porte: 'P', castrado: false, temperamento: 'ativo', alaId: 'ala_rec_obs' },
+  'LUN-000153': { base: 'ong', porte: 'G', castrado: true, temperamento: 'ativo', alaId: 'ala_ong_iso', relatoDores: 'Dor abdominal aguda.' },
+  'LUN-000121': { base: 'recanto', porte: 'P', castrado: true, temperamento: 'docil', alaId: 'ala_rec_c' },
+  'LUN-000159': { base: 'recanto', porte: 'P', castrado: false, temperamento: 'docil', alaId: 'ala_rec_obs' },
 }
 
 export const pets: Pet[] = basePets.map((p) => {

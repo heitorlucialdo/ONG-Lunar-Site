@@ -55,7 +55,7 @@ interface StoreValue {
   updatePet: (id: string, patch: Partial<Pet>) => void
   deletePet: (id: string) => void
   movePetStage: (id: string, stage: Stage) => void
-  updateLocation: (id: string, location: Pet['location'], setorStage?: Stage) => void
+  updateLocation: (id: string, location: Pet['location'], setorStage?: Stage, alaId?: string) => void
   // nested records
   addWeight: (petId: string, entry: Omit<WeightEntry, 'id'>) => void
   addMedication: (petId: string, med: Omit<Medication, 'id'>) => void
@@ -189,11 +189,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   )
 
   const updateLocation = useCallback<StoreValue['updateLocation']>(
-    (id, location, setorStage) => {
+    (id, location, setorStage, alaId) => {
       const { date, time } = nowParts()
       patchPet(id, (p) =>
         pushTimeline(
-          { ...p, location, stage: setorStage ?? p.stage },
+          { ...p, location, stage: setorStage ?? p.stage, alaId },
           { date, time, type: 'transferencia', title: 'Localização alterada', description: [location.setor, location.canil, location.box, location.sala].filter(Boolean).join(' · ') },
         ),
       )
@@ -363,7 +363,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       alerts: (snap?.alerts ?? []).filter((a) => belongs(a.petId)),
       sedes: (snap?.sedes ?? []).filter((x) => x.base === base),
       setores: (snap?.setores ?? []).filter((x) => x.base === base),
-      alas: (snap?.alas ?? []).filter((x) => x.base === base),
+      // ocupação derivada automaticamente dos animais alocados em cada ala
+      alas: (snap?.alas ?? [])
+        .filter((x) => x.base === base)
+        .map((a) => ({ ...a, occupied: pets.filter((p) => p.alaId === a.id).length })),
       user: snap?.user ?? { id: '', name: '', role: 'recepcao', email: '' },
       addPet, updatePet, deletePet, movePetStage, updateLocation,
       addWeight, addMedication, toggleMedicationActive, addVaccine, addRecord,

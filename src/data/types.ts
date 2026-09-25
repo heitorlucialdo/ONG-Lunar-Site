@@ -142,6 +142,7 @@ export interface Pet {
   status: ClinicalStatus
   stage: Stage
   location: PetLocation
+  alaId?: string // ala/canil onde o animal está alocado (calcula ocupação)
   priority: Priority
   createdAt: string
   lastVisit?: string

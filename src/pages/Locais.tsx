@@ -285,19 +285,17 @@ function AlaModal({ sedeId, setorId, editing, onClose }: { sedeId: string; setor
   const [name, setName] = useState(editing?.name ?? '')
   const [kind, setKind] = useState<AlaKind>(editing?.kind ?? 'ala')
   const [capacity, setCapacity] = useState(String(editing?.capacity ?? ''))
-  const [occupied, setOccupied] = useState(String(editing?.occupied ?? '0'))
   const [notes, setNotes] = useState(editing?.notes ?? '')
 
   const save = () => {
     if (!name.trim()) return toast({ kind: 'warning', title: 'Informe o nome da ala' })
     const cap = Number(capacity) || 0
-    const occ = Math.min(Number(occupied) || 0, cap)
-    if (editing) { updateAla(editing.id, { name: name.trim(), kind, capacity: cap, occupied: occ, notes: notes.trim() || undefined }); toast({ kind: 'success', title: 'Ala atualizada' }) }
-    else { addAla({ sedeId, setorId, name: name.trim(), kind, capacity: cap, occupied: occ, notes: notes.trim() || undefined }); toast({ kind: 'success', title: 'Ala cadastrada', message: name }) }
+    if (editing) { updateAla(editing.id, { name: name.trim(), kind, capacity: cap, notes: notes.trim() || undefined }); toast({ kind: 'success', title: 'Ala atualizada' }) }
+    else { addAla({ sedeId, setorId, name: name.trim(), kind, capacity: cap, occupied: 0, notes: notes.trim() || undefined }); toast({ kind: 'success', title: 'Ala cadastrada', message: name }) }
     onClose()
   }
   return (
-    <Modal open onClose={onClose} title={editing ? 'Editar ala / canil' : 'Nova ala / canil'} description="Espaço físico de alojamento, com tamanho e ocupação."
+    <Modal open onClose={onClose} title={editing ? 'Editar ala / canil' : 'Nova ala / canil'} description="Espaço físico de alojamento, com tamanho definido."
       footer={<><Button variant="outline" onClick={onClose}>Cancelar</Button><Button onClick={save}>{editing ? 'Salvar' : 'Cadastrar'}</Button></>}>
       <div className="grid grid-cols-2 gap-4">
         <Field label="Nome" required className="col-span-2 sm:col-span-1"><Input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex.: Ala A" /></Field>
@@ -306,10 +304,12 @@ function AlaModal({ sedeId, setorId, editing, onClose }: { sedeId: string; setor
             {(['ala', 'canil', 'baia', 'recinto', 'isolamento'] as AlaKind[]).map((k) => <option key={k} value={k}>{alaKindLabel[k]}</option>)}
           </Select>
         </Field>
-        <Field label="Tamanho (vagas)" required hint="Capacidade total" className="col-span-2 sm:col-span-1"><Input inputMode="numeric" value={capacity} onChange={(e) => setCapacity(e.target.value)} placeholder="10" /></Field>
-        <Field label="Ocupação atual" className="col-span-2 sm:col-span-1"><Input inputMode="numeric" value={occupied} onChange={(e) => setOccupied(e.target.value)} placeholder="0" /></Field>
+        <Field label="Tamanho (vagas)" required hint="Capacidade total de alojamento" className="col-span-2 sm:col-span-1"><Input inputMode="numeric" value={capacity} onChange={(e) => setCapacity(e.target.value)} placeholder="10" /></Field>
         <Field label="Observações" className="col-span-2"><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Opcional" /></Field>
       </div>
+      <p className="mt-4 rounded-xl bg-brand-50/60 px-3.5 py-2.5 text-xs text-brand-700">
+        A ocupação é calculada automaticamente pelos animais alocados nesta ala (em Pets → Alterar localização).
+      </p>
     </Modal>
   )
 }
